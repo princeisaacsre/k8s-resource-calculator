@@ -1,12 +1,25 @@
 #!/bin/bash
 
-# Set the threshold for resource quota usage
-THRESHOLD=50
+# Get a list of namespaces in the cluster
+namespaces=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}')
 
-# Run kubectl to get a list of namespaces and their resource quotas,
-# and filter out the ones that are using less than 50% of their quotas
-kubectl get namespaces -o json | \
-  jq -r '.items[] | .metadata.name as $ns | .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration" | fromjson.spec[]? | select(.kind=="ResourceQuota") | select(.metadata.namespace==$ns) | select((.status.hard | to_entries)[] | .value != null and (.status.used | to_entries)[] | .value != null and (.status.used | to_entries)[] | .value / (.status.hard | to_entries)[] | .value * 100 < '$THRESHOLD') | $ns' | \
-  sort | uniq | \
-  awk 'BEGIN {FS="\n"; RS=""} {print "\"" $1 "\""}' | \
-  sed -e '1i "Namespace"' > namespace_quotas.csv
+# Create a header row for the CSV file
+echo "Namespace,Resource,Hard,Used" > resource_quotas.csv
+
+# Loop through the namespaces and export their resource quotas to the CSV file
+for ns in $namespaces
+do
+    # Get the resource quotas for the namespace
+    quotas=$(kubectl get resourcequota -n $ns -o jsonpath='{.items[*].metadata.name}')
+
+    # Loop through the resource quotas and export their usage to the CSV file
+    for quota in $quotas
+    do
+        # Get the hard and used limits for the resource quota
+        hard=$(kubectl get resourcequota $quota -n $ns -o jsonpath='{.status.hard}')
+        used=$(kubectl get resourcequota $quota -n $ns -o jsonpath='{.status.used}')
+
+        # Add a row to the CSV file with the namespace, resource, hard limit, and used limit
+        echo "$ns,$quota,$hard,$used" >> resource_quotas.csv
+    done
+done

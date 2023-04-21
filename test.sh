@@ -4,7 +4,7 @@
 output_file="resource_quotas.csv"
 
 # Write the CSV header
-echo "Namespace,Quota Name,AGE (days),JOBS,CPU Limits,Memory Limits,CPU Requests,Memory Requests" > $output_file
+echo "Namespace,Quota Name,Hard CPU Limit,Hard Memory Limit,Used CPU Limit,Used Memory Limit" > $output_file
 
 # Get the list of namespaces
 namespaces=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}')
@@ -16,13 +16,11 @@ for namespace in $namespaces; do
   if [ -n "$quotas" ]; then
     # Extract quota information and append to CSV
     kubectl get resourcequota -n $namespace -o json | \
-    jq -r --argjson now "$(date +%s)" '.items[] | [
+    jq -r '.items[] | [
       .metadata.namespace,
       .metadata.name,
-      (($now - (.metadata.creationTimestamp | sub("\\.[0-9]+Z"; "Z") | fromdate)) / 86400 | floor),
-      (.spec.hard."count.jobs.batch" // "N/A"),
       (.spec.hard."limits.cpu" // "N/A"), (.spec.hard."limits.memory" // "N/A"),
-      (.spec.hard."requests.cpu" // "N/A"), (.spec.hard."requests.memory" // "N/A")
+      (.status.used."limits.cpu" // "N/A"), (.status.used."limits.memory" // "N/A")
       ] | @csv' >> $output_file
   fi
 done

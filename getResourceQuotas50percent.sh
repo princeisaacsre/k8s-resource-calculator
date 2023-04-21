@@ -1,28 +1,12 @@
 #!/bin/bash
 
-# set the threshold for resource usage percentage
-threshold=50
+# Set the threshold for resource quota usage
+THRESHOLD=50
 
-# get the list of namespaces
-namespaces=$(kubectl get namespaces -o jsonpath='{range .items[*].metadata.name}{@}{"\n"}{end}')
-
-# loop through each namespace and check resource usage
-for ns in ${namespaces}; do
-  # get the resource quota for the current namespace
-  quota=$(kubectl describe quota --namespace=${ns})
-
-  # extract the hard limits and used limits for each resource type
-  cpu_hard=$(echo "${quota}" | awk '/Limits.*cpu/{getline; print}' | awk '{print $2}')
-  cpu_used=$(echo "${quota}" | awk '/Used.*cpu/{getline; print}' | awk '{print $2}')
-  mem_hard=$(echo "${quota}" | awk '/Limits.*memory/{getline; print}' | awk '{print $2}')
-  mem_used=$(echo "${quota}" | awk '/Used.*memory/{getline; print}' | awk '{print $2}')
-
-  # calculate the percentage of resource usage for each type
-  cpu_percent=$(echo "scale=2; ${cpu_used}/${cpu_hard}*100" | bc)
-  mem_percent=$(echo "scale=2; ${mem_used}/${mem_hard}*100" | bc)
-
-  # check if any resource usage is below the threshold
-  if (( $(echo "${cpu_percent} < ${threshold}" | bc -l) )) || (( $(echo "${mem_percent} < ${threshold}" | bc -l) )); then
-    echo "${ns} is using less than ${threshold}% of its resource quota"
-  fi
-done
+# Run kubectl to get a list of namespaces and their resource quotas,
+# and filter out the ones that are using less than 50% of their quotas
+kubectl get namespaces -o json | \
+  jq -r '.items[] | .metadata.name as $ns | .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration" | fromjson.spec[]? | select(.kind=="ResourceQuota") | select(.metadata.namespace==$ns) | select((.status.hard | to_entries)[] | .value != null and (.status.used | to_entries)[] | .value != null and (.status.used | to_entries)[] | .value / (.status.hard | to_entries)[] | .value * 100 < '$THRESHOLD') | $ns' | \
+  sort | uniq | \
+  awk 'BEGIN {FS="\n"; RS=""} {print "\"" $1 "\""}' | \
+  sed -e '1i "Namespace"' > namespace_quotas.csv

@@ -48,7 +48,8 @@ In this example, the resource quota limits the total CPU requests to 4 cores, th
 
 By applying resource quotas in AKS, you can manage resource allocation effectively and ensure that the cluster resources are used efficiently and fairly among different teams, projects, or environments.
 
-- CPU Limits/Used
+- CPU Limits/Used:
+
 In Azure Kubernetes Service (AKS) and other Kubernetes environments, you can set limits and requests on both CPU and memory usage for your containers. By setting these limits and requests, you can control the allocation of CPU and memory resources to containers, ensure fair resource distribution, and avoid resource contention.
 
 Here's how CPU and memory limits and requests work in AKS:

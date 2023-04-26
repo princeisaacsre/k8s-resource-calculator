@@ -1,3 +1,5 @@
+FOCUS AREAS
+
 Azure Kubernetes Service (AKS) is a managed Kubernetes service provided by Microsoft Azure. To optimize costs when using AKS, consider focusing on the following areas:
 
 1. Right-sizing nodes and node pools: Choose the appropriate VM size and number of nodes for your workloads to balance performance and cost.
@@ -11,3 +13,18 @@ Azure Kubernetes Service (AKS) is a managed Kubernetes service provided by Micro
 9. Implement workload-specific optimizations: Optimize your application code, container images, and deployment strategies to minimize resource usage and cost.
 10. Network optimization: Optimize your network traffic by using Azure Load Balancer, Application Gateway, or other services to route traffic efficiently and reduce data transfer costs.
 11. Take advantage of Azure Cost Management: Utilize Azure Cost Management tools to gain insights into your AKS infrastructure costs and identify cost-saving opportunities.
+
+Storage supported by AKS:
+
+Azure Kubernetes Service (AKS) supports a variety of volume types for use with pods. These volume types provide different storage options depending on your requirements. Here are some of the most common volume types supported in AKS:
+
+- Azure Disk Storage: Azure Disks are block-level storage volumes that can be used with AKS. You can use Azure Managed Disks, which come in various performance tiers like Standard HDD, Standard SSD, Premium SSD, and Ultra Disk. To use Azure Disks with AKS, you can leverage the azureDisk volume type in your Kubernetes manifests.
+- Azure Files: Azure Files is a managed file storage service that allows you to create and use SMB file shares. It can be used as a shared storage option for your AKS workloads using the azureFile volume type.
+- EmptyDir: emptyDir is a temporary volume that can be used by a container within a pod. The data in an emptyDir volume is ephemeral, meaning it only exists for the lifetime of the pod and is deleted when the pod is terminated.
+- ConfigMap: configMap volumes allow you to store non-confidential configuration data in key-value pairs and mount them as files within a container. ConfigMaps can be used for application configuration and other purposes that don't require secure storage.
+- Secret: secret volumes are used to store sensitive information, like passwords or API keys, and securely expose them to containers within a pod. The data stored in a secret volume is base64-encoded but not encrypted.
+- PersistentVolume and PersistentVolumeClaim: persistentVolume (PV) and persistentVolumeClaim (PVC) provide a way to request and allocate storage resources in a Kubernetes cluster. PVs represent physical storage resources, while PVCs request a specific amount of storage from those resources. AKS can use Azure Disk Storage or Azure Files as the underlying storage provider for PVs.
+- HostPath: The hostPath volume type mounts a file or directory from the host node's filesystem into a container. This option should be used with caution, as it can lead to data loss and security risks if not managed correctly.
+- NFS: You can also use Network File System (NFS) volumes in AKS if you have an existing NFS server or use a third-party service that provides NFS storage. To use NFS volumes, you will need to configure the nfs volume type in your Kubernetes manifests.
+
+These are some of the common volume types supported by AKS for use with pods. Depending on your specific storage needs, you can choose the appropriate volume type for your workloads.

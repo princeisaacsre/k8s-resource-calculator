@@ -28,3 +28,18 @@ Azure Kubernetes Service (AKS) supports a variety of volume types for use with p
 - NFS: You can also use Network File System (NFS) volumes in AKS if you have an existing NFS server or use a third-party service that provides NFS storage. To use NFS volumes, you will need to configure the nfs volume type in your Kubernetes manifests.
 
 These are some of the common volume types supported by AKS for use with pods. Depending on your specific storage needs, you can choose the appropriate volume type for your workloads.
+
+Terminology
+
+- Namespaces: Namespaces in Azure Kubernetes Service (AKS) serve the same purpose as in any other Kubernetes environment. A namespace is a logical construct within a Kubernetes cluster used for organizing, isolating, and managing resources. Namespaces make it easier to manage different projects, teams, and environments within the same cluster.
+- Resource Quotas: Resource quotas in Azure Kubernetes Service (AKS) and other Kubernetes environments are used to control the consumption of resources within a specific namespace. They help prevent one project or team from consuming all available resources in the cluster and ensure fair resource allocation among different namespaces.
+
+```apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-resource-quota
+spec:
+  hard:
+    cpu: "4"
+    memory: 8Gi
+    pods: "10"```

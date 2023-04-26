@@ -117,6 +117,28 @@ In this example, the container is guaranteed a minimum of 100 millicores of CPU 
 
 It's important to set appropriate CPU and memory requests and limits for your containers in AKS to ensure efficient resource utilization and prevent performance issues caused by resource contention or over-allocation.
 
+- Pod Disruption Budgets:
+Pod Disruption Budgets (PDBs) are a Kubernetes feature that helps ensure a minimum number of replicas of a particular application are available at all times. PDBs are useful when you need to perform voluntary disruptions, such as node maintenance, upgrades, or autoscaling, without causing your application to become unavailable or experience reduced capacity.
+
+To create a Pod Disruption Budget, you'll need to define a PDB object in a YAML file, specifying the minimum number of available replicas for a particular application using a label selector. There are two ways to specify the minimum number of available replicas:
+
+  - minAvailable: The minimum number of replicas that must be available during a voluntary disruption. This can be an absolute number or a percentage of the total replicas.
+  - maxUnavailable: The maximum number of replicas that can be unavailable during a voluntary disruption. This can also be an absolute number or a percentage of the total replicas.
+
+Here's an example of a PDB that ensures at least 3 replicas of an application with the label app=my-app are available at all times:
+
+```
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: my-pdb
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: my-app
+```
+
 DETERMINING POD SIZE
 
 - When determining the pod size, you'll primarily be focusing on setting the right CPU and memory requests and limits for each container within the pod. Here are some effective ways to define the appropriate pod size:

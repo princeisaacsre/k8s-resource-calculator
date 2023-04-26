@@ -238,8 +238,34 @@ In this example, the PVC named "my-pvc" is mounted to the "/data" directory insi
 
 - Monitor and adjust: Continuously monitor storage usage and adjust the storage size for containers as needed. If you find that a container consistently has unused storage or is running out of storage, update the PVC accordingly and reapply the changes to the cluster.
 
+
+
 By following these steps, you can determine the appropriate storage size for your containers in AKS and ensure efficient storage allocation and management.
 
+DETERMINING POD DISRUPTION BUDGETS
+
+Determining the appropriate Pod Disruption Budget (PDB) for your applications in Azure Kubernetes Service (AKS) involves assessing your application's requirements, understanding the impact of disruptions, and defining the right PDB settings. Here's a step-by-step process for determining PDBs in AKS:
+
+- Assess application requirements: Review your applications and identify their high availability and fault tolerance requirements. Determine which applications need a PDB based on their criticality, redundancy, and tolerance for disruptions.
+- Evaluate the impact of disruptions: Understand the potential impact of disruptions on your applications, such as during node maintenance, upgrades, or autoscaling. Consider factors like the number of replicas, deployment strategy, and resource constraints.
+- Calculate the minimum available replicas: Based on your assessment, determine the minimum number of replicas that must be available for each application during a disruption. You can set this value as an absolute number or a percentage of the total replicas.
+- Create a PDB object: Define a PDB object for each application in a YAML file, specifying the minAvailable or maxUnavailable values based on your calculations. Use a label selector to target the desired application. For example:
+
+``` apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: my-pdb
+spec:
+  minAvailable: 3
+  selector:
+    matchLabels:
+      app: my-app
+```
+In this example, a PDB is created to ensure that at least 3 replicas of an application with the label app=my-app are available at all times.
+
+- Monitor and adjust: Continuously monitor your applications and PDBs to ensure they're meeting your high availability and fault tolerance requirements. Adjust the PDB settings as needed based on changes in application requirements or resource constraints.
+
+By following these steps, you can determine the appropriate Pod Disruption Budgets for your applications in AKS and maintain their availability and resilience during planned maintenance and other voluntary disruptions.
 COMMON COST OPTIMIZATION TECHNIQUES
 
 To optimize costs in Azure Kubernetes Service (AKS), you need to efficiently manage resources and take advantage of various Azure features and best practices. Here are some cost optimization techniques for AKS:

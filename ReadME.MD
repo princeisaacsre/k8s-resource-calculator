@@ -149,6 +149,64 @@ Apply the ResourceQuota: Use kubectl to apply the ResourceQuota object to the de
 
 By following these steps, you can determine the appropriate resource quota sizes for your namespaces in AKS and ensure efficient resource allocation and management.
 
+DETERMINING STORAGE SIZE FOR PODS
+
+Determining the appropriate storage size for containers in Azure Kubernetes Service (AKS) involves understanding the storage requirements of your applications and selecting the right storage options. Here are the steps to determine storage size for containers in AKS:
+
+- Analyze application storage requirements: Review your applications to understand their storage needs. Consider factors like the type of data being stored, access patterns, performance, and data durability requirements.
+- Monitor storage usage: Use monitoring tools like Prometheus, Kubernetes Metrics Server, or Azure Monitor to track storage usage across your AKS cluster. This will help you identify trends and patterns in storage consumption.
+- Choose the right storage class: AKS supports several storage classes, each with different performance and cost characteristics. Based on your application's storage requirements, choose the most appropriate storage class. Some of the available storage classes in AKS are:
+
+  - Azure Disk Storage (Standard, Premium, and Ultra SSD)
+  - Azure File Storage (Standard and Premium)
+  - Azure Blob Storage (Block Blob)
+
+- Estimate storage size per container: Based on your analysis of the application storage requirements and the chosen storage class, estimate the storage size needed for each container. Consider both the current storage needs and any expected future growth.
+- Create Persistent Volume Claims (PVCs): For each container that requires persistent storage, create a PVC with the desired storage size and storage class. For example:
+
+yaml
+Copy code
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: managed-premium
+
+In this example, a PVC is created with a request for 10 GiB of storage using the "managed-premium" storage class.
+
+Attach PVCs to containers: Modify the container specifications in your pod or deployment YAML files to use the PVCs you created. 
+
+For example:
+```yaml
+Copy code
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  containers:
+  - name: my-container
+    image: my-image
+    volumeMounts:
+    - mountPath: /data
+      name: my-volume
+  volumes:
+  - name: my-volume
+    persistentVolumeClaim:
+      claimName: my-pvc
+```
+In this example, the PVC named "my-pvc" is mounted to the "/data" directory inside the container.
+
+- Monitor and adjust: Continuously monitor storage usage and adjust the storage size for containers as needed. If you find that a container consistently has unused storage or is running out of storage, update the PVC accordingly and reapply the changes to the cluster.
+
+By following these steps, you can determine the appropriate storage size for your containers in AKS and ensure efficient storage allocation and management.
+
 COMMON COST OPTIMIZATION TECHNIQUES
 
 To optimize costs in Azure Kubernetes Service (AKS), you need to efficiently manage resources and take advantage of various Azure features and best practices. Here are some cost optimization techniques for AKS:

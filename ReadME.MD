@@ -42,4 +42,15 @@ spec:
   hard:
     cpu: "4"
     memory: 8Gi
-    pods: "10"```
+    pods: "10"
+```
+- CPU Limits/Used
+In Azure Kubernetes Service (AKS) and other Kubernetes environments, you can set limits on CPU usage for your containers. By setting CPU limits and requests, you can control the amount of CPU resources allocated to containers, ensure fair resource distribution, and avoid resource contention.
+
+Here's how CPU limits and requests work in AKS:
+
+--CPU Requests: A CPU request is the minimum amount of CPU resources guaranteed to a container. If a container requests a specific amount of CPU resources, the Kubernetes scheduler will place the container on a node with enough available CPU resources to fulfill the request. CPU requests are specified in millicores (1/1000 of a core), such as 100m or 0.1.
+
+--CPU Limits: A CPU limit is the maximum amount of CPU resources that a container can use. If a container's CPU usage exceeds the limit, it may be throttled or have its CPU cycles reduced. Like CPU requests, CPU limits are specified in millicores.
+
+

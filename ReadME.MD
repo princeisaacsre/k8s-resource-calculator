@@ -38,21 +38,31 @@ AKS SUPPORTED STORAGE TYPES
 
 Azure Kubernetes Service (AKS) supports a variety of volume types for use with pods. These volume types provide different storage options depending on your requirements. Here are some of the most common volume types supported in AKS:
 
-- Azure Disk Storage: Azure Disks are block-level storage volumes that can be used with AKS. You can use Azure Managed Disks, which come in various performance tiers like Standard HDD, Standard SSD, Premium SSD, and Ultra Disk. To use Azure Disks with AKS, you can leverage the azureDisk volume type in your Kubernetes manifests.
-- Azure Files: Azure Files is a managed file storage service that allows you to create and use SMB file shares. It can be used as a shared storage option for your AKS workloads using the azureFile volume type.
-- EmptyDir: emptyDir is a temporary volume that can be used by a container within a pod. The data in an emptyDir volume is ephemeral, meaning it only exists for the lifetime of the pod and is deleted when the pod is terminated.
-- ConfigMap: configMap volumes allow you to store non-confidential configuration data in key-value pairs and mount them as files within a container. ConfigMaps can be used for application configuration and other purposes that don't require secure storage.
-- Secret: secret volumes are used to store sensitive information, like passwords or API keys, and securely expose them to containers within a pod. The data stored in a secret volume is base64-encoded but not encrypted.
-- PersistentVolume and PersistentVolumeClaim: persistentVolume (PV) and persistentVolumeClaim (PVC) provide a way to request and allocate storage resources in a Kubernetes cluster. PVs represent physical storage resources, while PVCs request a specific amount of storage from those resources. AKS can use Azure Disk Storage or Azure Files as the underlying storage provider for PVs.
-- HostPath: The hostPath volume type mounts a file or directory from the host node's filesystem into a container. This option should be used with caution, as it can lead to data loss and security risks if not managed correctly.
-- NFS: You can also use Network File System (NFS) volumes in AKS if you have an existing NFS server or use a third-party service that provides NFS storage. To use NFS volumes, you will need to configure the nfs volume type in your Kubernetes manifests.
+- Azure Disk Storage: 
+Azure Disks are block-level storage volumes that can be used with AKS. You can use Azure Managed Disks, which come in various performance tiers like Standard HDD, Standard SSD, Premium SSD, and Ultra Disk. To use Azure Disks with AKS, you can leverage the azureDisk volume type in your Kubernetes manifests.
+- Azure Files: 
+Azure Files is a managed file storage service that allows you to create and use SMB file shares. It can be used as a shared storage option for your AKS workloads using the azureFile volume type.
+- EmptyDir: 
+emptyDir is a temporary volume that can be used by a container within a pod. The data in an emptyDir volume is ephemeral, meaning it only exists for the lifetime of the pod and is deleted when the pod is terminated.
+- ConfigMap: 
+configMap volumes allow you to store non-confidential configuration data in key-value pairs and mount them as files within a container. ConfigMaps can be used for application configuration and other purposes that don't require secure storage.
+- Secret: 
+secret volumes are used to store sensitive information, like passwords or API keys, and securely expose them to containers within a pod. The data stored in a secret volume is base64-encoded but not encrypted.
+- PersistentVolume and PersistentVolumeClaim: 
+persistentVolume (PV) and persistentVolumeClaim (PVC) provide a way to request and allocate storage resources in a Kubernetes cluster. PVs represent physical storage resources, while PVCs request a specific amount of storage from those resources. AKS can use Azure Disk Storage or Azure Files as the underlying storage provider for PVs.
+- HostPath: 
+The hostPath volume type mounts a file or directory from the host node's filesystem into a container. This option should be used with caution, as it can lead to data loss and security risks if not managed correctly.
+- NFS: 
+You can also use Network File System (NFS) volumes in AKS if you have an existing NFS server or use a third-party service that provides NFS storage. To use NFS volumes, you will need to configure the nfs volume type in your Kubernetes manifests.
 
 These are some of the common volume types supported by AKS for use with pods. Depending on your specific storage needs, you can choose the appropriate volume type for your workloads.
 
 COMMON TERMINOLOGY
 
-- Namespaces: Namespaces in Azure Kubernetes Service (AKS) serve the same purpose as in any other Kubernetes environment. A namespace is a logical construct within a Kubernetes cluster used for organizing, isolating, and managing resources. Namespaces make it easier to manage different projects, teams, and environments within the same cluster.
-- Resource Quotas: Resource quotas in Azure Kubernetes Service (AKS) and other Kubernetes environments are used to control the consumption of resources within a specific namespace. They help prevent one project or team from consuming all available resources in the cluster and ensure fair resource allocation among different namespaces.
+- Namespaces: 
+Namespaces in Azure Kubernetes Service (AKS) serve the same purpose as in any other Kubernetes environment. A namespace is a logical construct within a Kubernetes cluster used for organizing, isolating, and managing resources. Namespaces make it easier to manage different projects, teams, and environments within the same cluster.
+- Resource Quotas: 
+Resource quotas in Azure Kubernetes Service (AKS) and other Kubernetes environments are used to control the consumption of resources within a specific namespace. They help prevent one project or team from consuming all available resources in the cluster and ensure fair resource allocation among different namespaces.
 
 ```apiVersion: v1
 kind: ResourceQuota
@@ -74,10 +84,10 @@ In Azure Kubernetes Service (AKS) and other Kubernetes environments, you can set
 
 Here's how CPU and memory limits and requests work in AKS:
 
-CPU Requests: The minimum amount of CPU resources guaranteed to a container. CPU requests are specified in millicores (1/1000 of a core), such as 100m or 0.1.
-CPU Limits: The maximum amount of CPU resources that a container can use. If a container's CPU usage exceeds the limit, it may be throttled or have its CPU cycles reduced. Like CPU requests, CPU limits are specified in millicores.
-Memory Requests: The minimum amount of memory resources guaranteed to a container. Memory requests are specified in bytes or with common suffixes like 'Mi' (mebibytes) or 'Gi' (gibibytes), such as 64Mi or 2Gi.
-Memory Limits: The maximum amount of memory resources that a container can use. If a container's memory usage exceeds the limit, it may be terminated or have its processes killed by the operating system. Memory limits are specified in the same way as memory requests.
+  - CPU Requests: The minimum amount of CPU resources guaranteed to a container. CPU requests are specified in millicores (1/1000 of a core), such as 100m or 0.1.
+  - CPU Limits: The maximum amount of CPU resources that a container can use. If a container's CPU usage exceeds the limit, it may be throttled or have its CPU cycles reduced. Like CPU requests, CPU limits are specified in millicores.
+  - Memory Requests: The minimum amount of memory resources guaranteed to a container. Memory requests are specified in bytes or with common suffixes like 'Mi' (mebibytes) or 'Gi' (gibibytes), such as 64Mi or 2Gi.
+  - Memory Limits: The maximum amount of memory resources that a container can use. If a container's memory usage exceeds the limit, it may be terminated or have its processes killed by the operating system. Memory limits are specified in the same way as memory requests.
 
 To set CPU and memory requests and limits in AKS, you need to define them in the container spec within a Kubernetes manifest file (e.g., a Deployment or Pod resource). Here's an example of how to set CPU and memory requests and limits for a container:
 
@@ -107,7 +117,7 @@ In this example, the container is guaranteed a minimum of 100 millicores of CPU 
 
 It's important to set appropriate CPU and memory requests and limits for your containers in AKS to ensure efficient resource utilization and prevent performance issues caused by resource contention or over-allocation.
 
-Determining Pod Size
+DETERMINING POD SIZE
 
 - When determining the pod size, you'll primarily be focusing on setting the right CPU and memory requests and limits for each container within the pod. Here are some effective ways to define the appropriate pod size:
 - Analyze application requirements: Understand your application's resource requirements based on its architecture, workload, and performance needs. Consider the minimum and maximum resources required for the application to function correctly, and determine the appropriate CPU and memory settings.

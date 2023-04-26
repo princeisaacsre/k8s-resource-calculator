@@ -164,7 +164,7 @@ Determining the appropriate storage size for containers in Azure Kubernetes Serv
 - Estimate storage size per container: Based on your analysis of the application storage requirements and the chosen storage class, estimate the storage size needed for each container. Consider both the current storage needs and any expected future growth.
 - Create Persistent Volume Claims (PVCs): For each container that requires persistent storage, create a PVC with the desired storage size and storage class. For example:
 
-yaml
+```yaml
 Copy code
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -177,12 +177,13 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: managed-premium
-
+```
 In this example, a PVC is created with a request for 10 GiB of storage using the "managed-premium" storage class.
 
 Attach PVCs to containers: Modify the container specifications in your pod or deployment YAML files to use the PVCs you created. 
 
 For example:
+
 ```yaml
 Copy code
 apiVersion: v1

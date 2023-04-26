@@ -106,3 +106,23 @@ Determining Pod Size
 - Test and iterate: Continuously test your application's performance and resource consumption as you make changes to the pod size. Be prepared to iterate and adjust the settings as needed based on feedback and real-world data.
 
 Always monitor and analyze your application's performance and resource usage to make informed decisions about your pod sizes.
+
+
+Common optimization techniques:
+
+
+To optimize costs in Azure Kubernetes Service (AKS), you need to efficiently manage resources and take advantage of various Azure features and best practices. Here are some cost optimization techniques for AKS:
+
+- Right-size your nodes: Choose the appropriate VM size for your node pool based on your workload's resource requirements. Monitor your workloads and adjust the VM size as needed to avoid over-provisioning or under-provisioning resources.
+- Use multiple node pools: Create different node pools with varying VM sizes and types to accommodate different workloads. This allows you to allocate resources more efficiently and reduce costs.
+- Scale your cluster: Use the AKS cluster autoscaler to automatically scale the number of nodes in a node pool based on demand. This ensures that you have the right amount of resources to handle your workloads, without over-provisioning or under-provisioning resources.
+- Implement pod disruption budgets: Pod disruption budgets (PDBs) can help ensure that a minimum number of replicas are always available for your applications, allowing for more efficient resource allocation.
+- Use spot instances: Leverage Azure Spot VMs for your AKS node pools to take advantage of unused capacity at a discounted price. Be aware that spot instances can be preempted, so ensure your workloads can tolerate interruptions.
+- Set resource requests and limits: Properly configure resource requests and limits for your containers to avoid resource contention and over-allocation. This helps ensure efficient resource usage and better cost management.
+- Implement resource quotas: Use resource quotas to limit the consumption of resources within a specific namespace. This helps prevent one project or team from consuming all available resources and ensures fair resource allocation.
+- Optimize storage usage: Choose the right storage classes and sizes for your Persistent Volumes (PVs) and Persistent Volume Claims (PVCs). Delete unused PVs and PVCs to free up storage and reduce costs.
+- Monitor and analyze: Use monitoring tools like Prometheus, Kubernetes Metrics Server, and Azure Monitor to track resource usage and identify areas for cost optimization.
+- Utilize Azure Reserved Instances: Purchase Azure Reserved Instances for your AKS node pools if you have long-term, predictable workloads. This can help you save money by committing to a one or three-year term.
+- Optimize application code: Ensure that your applications are optimized for performance and efficient resource usage. This can help reduce overall resource requirements and associated costs.
+
+By applying these cost optimization techniques in AKS, you can achieve better resource allocation, improved performance, and reduced costs. Continuously monitor and analyze your resource usage and make adjustments as needed to ensure the most efficient and cost-effective use of your AKS cluster.

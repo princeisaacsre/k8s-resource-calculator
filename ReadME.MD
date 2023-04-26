@@ -88,20 +88,20 @@ It's important to set appropriate CPU and memory requests and limits for your co
 
 Determining Pod Size
 
-When determining the pod size, you'll primarily be focusing on setting the right CPU and memory requests and limits for each container within the pod. Here are some effective ways to define the appropriate pod size:
+- When determining the pod size, you'll primarily be focusing on setting the right CPU and memory requests and limits for each container within the pod. Here are some effective ways to define the appropriate pod size:
 
-Analyze application requirements: Understand your application's resource requirements based on its architecture, workload, and performance needs. Consider the minimum and maximum resources required for the application to function correctly, and determine the appropriate CPU and memory settings.
+- Analyze application requirements: Understand your application's resource requirements based on its architecture, workload, and performance needs. Consider the minimum and maximum resources required for the application to function correctly, and determine the appropriate CPU and memory settings.
 
-Monitor historical usage: Use monitoring tools such as Prometheus or Kubernetes Metrics Server, along with visualization tools like Grafana, to analyze historical resource usage data. This information can help you identify patterns in resource consumption and adjust the pod size accordingly.
+- Monitor historical usage: Use monitoring tools such as Prometheus or Kubernetes Metrics Server, along with visualization tools like Grafana, to analyze historical resource usage data. This information can help you identify patterns in resource consumption and adjust the pod size accordingly.
 
-Perform load testing: Run load tests on your application to simulate real-world traffic and identify how your application behaves under different levels of load. Use the results to fine-tune the pod size based on the application's performance and scalability requirements.
+- Perform load testing: Run load tests on your application to simulate real-world traffic and identify how your application behaves under different levels of load. Use the results to fine-tune the pod size based on the application's performance and scalability requirements.
 
-Use Vertical Pod Autoscaler (VPA): Vertical Pod Autoscaler can automatically adjust the CPU and memory requests and limits for your containers based on historical resource usage data. VPA can be a helpful tool for optimizing pod sizes over time, but it should be used cautiously and in conjunction with manual analysis.
+- Use Vertical Pod Autoscaler (VPA): Vertical Pod Autoscaler can automatically adjust the CPU and memory requests and limits for your containers based on historical resource usage data. VPA can be a helpful tool for optimizing pod sizes over time, but it should be used cautiously and in conjunction with manual analysis.
 
-Start with conservative settings: When initially defining pod sizes, it's better to be conservative and allocate slightly more resources than you think are needed. You can then monitor resource usage and adjust the pod size as needed based on real-world data.
+- Start with conservative settings: When initially defining pod sizes, it's better to be conservative and allocate slightly more resources than you think are needed. You can then monitor resource usage and adjust the pod size as needed based on real-world data.
 
-Optimize application code: Make sure that your application code is optimized for performance and efficient resource usage. Optimizing the application can help you reduce resource requirements and make it easier to determine the right pod size.
+- Optimize application code: Make sure that your application code is optimized for performance and efficient resource usage. Optimizing the application can help you reduce resource requirements and make it easier to determine the right pod size.
 
-Test and iterate: Continuously test your application's performance and resource consumption as you make changes to the pod size. Be prepared to iterate and adjust the settings as needed based on feedback and real-world data.
+- Test and iterate: Continuously test your application's performance and resource consumption as you make changes to the pod size. Be prepared to iterate and adjust the settings as needed based on feedback and real-world data.
 
-While these methods for defining pod sizes have remained consistent, it's essential to stay up-to-date with the latest Kubernetes features and best practices as cloud services continue to evolve rapidly. Always monitor and analyze your application's performance and resource usage to make informed decisions about your pod sizes.
+Always monitor and analyze your application's performance and resource usage to make informed decisions about your pod sizes.

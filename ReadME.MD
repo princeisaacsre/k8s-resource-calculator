@@ -122,8 +122,8 @@ Pod Disruption Budgets (PDBs) are a Kubernetes feature that helps ensure a minim
 
 To create a Pod Disruption Budget, you'll need to define a PDB object in a YAML file, specifying the minimum number of available replicas for a particular application using a label selector. There are two ways to specify the minimum number of available replicas:
 
-    - minAvailable: The minimum number of replicas that must be available during a voluntary disruption. This can be an absolute number or a percentage of the total replicas.
-    - maxUnavailable: The maximum number of replicas that can be unavailable during a voluntary disruption. This can also be an absolute number or a percentage of the total replicas.
+  - minAvailable: The minimum number of replicas that must be available during a voluntary disruption. This can be an absolute number or a percentage of the total replicas.
+  - maxUnavailable: The maximum number of replicas that can be unavailable during a voluntary disruption. This can also be an absolute number or a percentage of the total replicas.
 
 Here's an example of a PDB that ensures at least 3 replicas of an application with the label app=my-app are available at all times:
 

@@ -44,13 +44,46 @@ spec:
     memory: 8Gi
     pods: "10"
 ```
+In this example, the resource quota limits the total CPU requests to 4 cores, the total memory requests to 8 GiB, and the maximum number of pods in the namespace to 10.
+
+By applying resource quotas in AKS, you can manage resource allocation effectively and ensure that the cluster resources are used efficiently and fairly among different teams, projects, or environments.
+
 - CPU Limits/Used
-In Azure Kubernetes Service (AKS) and other Kubernetes environments, you can set limits on CPU usage for your containers. By setting CPU limits and requests, you can control the amount of CPU resources allocated to containers, ensure fair resource distribution, and avoid resource contention.
+In Azure Kubernetes Service (AKS) and other Kubernetes environments, you can set limits and requests on both CPU and memory usage for your containers. By setting these limits and requests, you can control the allocation of CPU and memory resources to containers, ensure fair resource distribution, and avoid resource contention.
 
-Here's how CPU limits and requests work in AKS:
+Here's how CPU and memory limits and requests work in AKS:
 
---CPU Requests: A CPU request is the minimum amount of CPU resources guaranteed to a container. If a container requests a specific amount of CPU resources, the Kubernetes scheduler will place the container on a node with enough available CPU resources to fulfill the request. CPU requests are specified in millicores (1/1000 of a core), such as 100m or 0.1.
+CPU Requests: The minimum amount of CPU resources guaranteed to a container. CPU requests are specified in millicores (1/1000 of a core), such as 100m or 0.1.
+CPU Limits: The maximum amount of CPU resources that a container can use. If a container's CPU usage exceeds the limit, it may be throttled or have its CPU cycles reduced. Like CPU requests, CPU limits are specified in millicores.
+Memory Requests: The minimum amount of memory resources guaranteed to a container. Memory requests are specified in bytes or with common suffixes like 'Mi' (mebibytes) or 'Gi' (gibibytes), such as 64Mi or 2Gi.
+Memory Limits: The maximum amount of memory resources that a container can use. If a container's memory usage exceeds the limit, it may be terminated or have its processes killed by the operating system. Memory limits are specified in the same way as memory requests.
 
---CPU Limits: A CPU limit is the maximum amount of CPU resources that a container can use. If a container's CPU usage exceeds the limit, it may be throttled or have its CPU cycles reduced. Like CPU requests, CPU limits are specified in millicores.
+To set CPU and memory requests and limits in AKS, you need to define them in the container spec within a Kubernetes manifest file (e.g., a Deployment or Pod resource). Here's an example of how to set CPU and memory requests and limits for a container:
+
+```apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+```
+In this example, the container is guaranteed a minimum of 100 millicores of CPU (0.1 core) and 128 MiB of memory. It can use up to 500 millicores (0.5 core) of CPU before being throttled and up to 256 MiB of memory before being terminated or having its processes killed.
+
+It's important to set appropriate CPU and memory requests and limits for your containers in AKS to ensure efficient resource utilization and prevent performance issues caused by resource contention or over-allocation.
 
 

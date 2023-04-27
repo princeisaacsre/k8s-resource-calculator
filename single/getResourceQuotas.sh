@@ -4,12 +4,12 @@
 NAMESPACE="<your_namespace_here>"
 
 # Set the output CSV file
-OUTPUT_FILE="namespace_resource_quota.csv"
+OUTPUT_FILE="resource_quota_attributes.csv"
 
 # Write the CSV header to the output file
-echo "Name,Namespace,Used(count/jobs.batch),Hard(count/jobs.batch),Used(limits.cpu),Hard(limits.cpu),Used(limits.memory),Hard(limits.memory)" > "${OUTPUT_FILE}"
+echo "Name,Namespace,Created,Resource,Used,Hard" > "${OUTPUT_FILE}"
 
 # Get the resource quotas and parse the output
 kubectl get resourcequota --namespace "${NAMESPACE}" -o json |
-  jq -r '.items[] | [.metadata.name, .metadata.namespace, (.status.used["count/jobs.batch"] // "N/A"), (.spec.hard["count/jobs.batch"] // "N/A"), (.status.used["limits.cpu"] // "N/A"), (.spec.hard["limits.cpu"] // "N/A"), (.status.used["limits.memory"] // "N/A"), (.spec.hard["limits.memory"] // "N/A")] | @csv' |
+  jq -r '.items[] | .metadata.namespace as $ns | .metadata.name as $name | .metadata.creationTimestamp as $created | .status.used as $used | .spec.hard as $hard | ($used | to_entries[]) as $usedEntry | ($hard | to_entries[] | select(.key == $usedEntry.key)) as $hardEntry | [$name, $ns, ($created | fromdate | strftime("%Y-%m-%d")), $usedEntry.key, $usedEntry.value, $hardEntry.value] | @csv' |
   sed 's/"//g' >> "${OUTPUT_FILE}"

@@ -3,13 +3,8 @@
 # UNCOMMENT this line to enable debugging
 # set -xv
 
-## Get resources requests and limits per container in a Kubernetes cluster.
-
-OUT=resources.csv
-NAMESPACE=--all-namespaces
-QUITE=false
-HEADERS=true
-CONSOLE_ONLY=false
+# Get formatted results of the pods underlying node's load average (using cat /proc/loadavg)
+NAMESPACE=default
 SCRIPT_NAME=$0
 
 ######### Functions #########
@@ -22,22 +17,16 @@ errorExit () {
 usage () {
     cat << END_USAGE
 
-${SCRIPT_NAME} - Extract resource requests and limits in a Kubernetes cluster for a selected namespace or all namespaces in a CSV format
+${SCRIPT_NAME} - Get formatted results of the pods underlying node's load average (using cat /proc/loadavg)
 
 Usage: ${SCRIPT_NAME} <options>
 
--n | --namespace <name>                : Namespace to analyse.    Default: --all-namespaces
--o | --output <name>                   : Output file.             Default: ${OUT}
--q | --quite                           : Don't output to stdout.  Default: Output to stdout
--h | --help                            : Show this usage
---no-headers                           : Don't print headers line
---console-only                         : Output to stdout only (don't write to file)
+-n | --namespace <name>      : Namespace to use. Default: default
+-h | --help                  : Show this usage
 
 Examples:
 ========
-Get all:                                                  $ ${SCRIPT_NAME}
-Get for namespace foo:                                    $ ${SCRIPT_NAME} --namespace foo
-Get for namespace foo and use output file bar.csv :       $ ${SCRIPT_NAME} --namespace foo --output bar.csv
+Get load form pods in namespace bar:            $ ${SCRIPT_NAME} --namespace bar
 
 END_USAGE
 
@@ -49,25 +38,8 @@ processOptions () {
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -n | --namespace)
-                NAMESPACE="--namespace $2"
+                NAMESPACE="$2"
                 shift 2
-            ;;
-            -o | --output)
-                OUT=$2
-                shift 2
-            ;;
-            -q | --quite)
-                QUITE=true
-                shift 1
-            ;;
-            --no-headers)
-                HEADERS=false
-                shift 1
-            ;;
-            --console-only)
-                CONSOLE_ONLY=true
-                OUT=/dev/null
-                shift 1
             ;;
             -h | --help)
                 usage
@@ -80,94 +52,36 @@ processOptions () {
     done
 }
 
-# Test connection to a cluster by kubectl
+# Test connection and that there are pods in the namespace
 testConnection () {
-    kubectl cluster-info > /dev/null || errorExit "Connection to cluster failed"
+    kubectl get ns "${NAMESPACE}" > /dev/null || errorExit "Namespace ${NAMESPACE} does not exist"
+    [[ $(kubectl get pods -n "${NAMESPACE}" 2> /dev/null| wc -l | tr -d ' ') == '0' ]] && errorExit "Namespace ${NAMESPACE} has no running pods"
 }
 
-formatCpu () {
-    local result=$1
-    if [[ ${result} =~ m$ ]]; then
-        result=$(echo "${result}" | tr -d 'm')
-        result=$(awk "BEGIN {print ${result}/1000}")
-    fi
+getPodsLoad () {
+    local load1
+    local load5
+    local load15
+    local dummy
+    local pods
 
-    echo -n "${result}"
-}
+    # Print header
+    echo "Pod, Load 1, Load 5, Load 15"
 
-formatMemory () {
-    local result=$1
-    if [[ ${result} =~ M ]]; then
-        result=$(echo "${result}" | tr -d 'Mi')
-        result=$(awk "BEGIN {print ${result}/1000}")
-    elif [[ ${result} =~ m ]]; then
-        result=$(echo "${result}" | tr -d 'm')
-        result=$(awk "BEGIN {print ${result}/1000000000000}")
-    elif [[ ${result} =~ G ]]; then
-        result=$(echo "${result}" | tr -d 'Gi')
-    fi
+    # Get list of pods
+    pods=$(kubectl get pods -n "${NAMESPACE}" --no-headers -o=custom-columns=NAME:.metadata.name)
 
-    echo -n "${result}"
-}
-
-getRequestsAndLimits () {
-    local data=
-    local namespace=
-    local pod=
-    local container=
-    local cpu_request=
-    local mem_request=
-    local cpu_limit=
-    local mem_limit=
-    local cpu_usage=
-    local memory_usage=
-    local line=
-    local final_line=
-
-    data=$(kubectl get pods ${NAMESPACE} -o json | jq -r '.items[] | .metadata.namespace + "," + .metadata.name + "," + (.spec.containers[] | .name + "," + .resources.requests.cpu + "," + .resources.requests.memory + "," + .resources.limits.cpu + "," + .resources.limits.memory)')
-
-    # Backup OUT file if already exists
-    [ -f "${OUT}" ] && [ "$CONSOLE_ONLY" == "false" ] && cp -f "${OUT}" "${OUT}.$(date +"%Y-%m-%d_%H:%M:%S")"
-
-    # Prepare header for output CSV
-    if [ "${HEADERS}" == true ]; then
-        echo "Namespace,Pod,Container,CPU request,CPU Usage,Memory request,Memory Usage,CPU limit,Memory limit" | tee "${OUT}"
-    else
-        echo -n "" > "${OUT}"
-    fi
-
-    local OLD_IFS=${IFS}
-    IFS=$'\n'
-    for l in ${data}; do
-        namespace=$(echo "${l}" | awk -F, '{print $1}')
-        pod=$(echo "${l}" | awk -F, '{print $2}')
-        container=$(echo "${l}" | awk -F, '{print $3}')
-        cpu_request=$(formatCpu "$(echo "${l}" | awk -F, '{print $4}')")
-        mem_request=$(formatMemory "$(echo "${l}" | awk -F, '{print $5}')")
-        cpu_limit=$(formatCpu "$(echo "${l}" | awk -F, '{print $6}')")
-        mem_limit=$(formatMemory "$(echo "${l}" | awk -F, '{print $7}')")
-
-        # Adding pod and container actual usage with pod top data
-        line=$(kubectl top pod -n ${namespace} ${pod} --containers --use-protocol-buffers | grep " ${container} ")
-
-        cpu_usage=$(formatCpu "$(echo "${line}" | awk '{print $3}')")
-        memory_usage=$(formatMemory "$(echo "${line}" | awk '{print $4}')")
-
-        final_line=${namespace},${pod},${container},${cpu_request},${cpu_usage},${mem_request},${memory_usage},${cpu_limit},${mem_limit}
-        if [ "${QUITE}" == true ]; then
-            echo "${final_line}" >> "${OUT}"
-        else
-            echo "${final_line}" | tee -a "${OUT}"
-        fi
+    # Go over the pods and extract data
+    for p in $pods; do
+        read -r load1 load5 load15 dummy <<< $(kubectl exec -n "${NAMESPACE}" "$p" -- sh -c "cat /proc/loadavg" 2> /dev/null)
+        echo "$p, $load1, $load5, $load15"
     done
-    IFS=${OLD_IFS}
 }
 
 main () {
     processOptions "$@"
-    [ "${QUITE}" == true ] || echo "Getting pods resource requests and limits"
     testConnection
-    getRequestsAndLimits
+    getPodsLoad
 }
 
 ######### Main #########
